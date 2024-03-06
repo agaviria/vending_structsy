@@ -147,6 +147,7 @@ async fn drink_coffee(
 }
 
 async fn list_coffees(State(state): State<AppState>) -> Result<AppJson<CoffeeList>, AppError> {
+    state.connection.define::<Coffee>()?;
     let mut coffees = Vec::new();
     for (id, coffee) in state.connection.scan::<Coffee>()? {
         coffees.push(CoffeeItem {
@@ -192,6 +193,8 @@ async fn drink_beer(
 }
 
 async fn list_beers(State(state): State<AppState>) -> Result<AppJson<BeerList>, AppError> {
+    // next line is here so the application does not return a 404 when the `Beer` struct is not initialized
+    state.connection.define::<Beer>()?;
     let mut beers = Vec::new();
     for (id, beer) in state.connection.scan::<Beer>()? {
         beers.push(BeerItem {
