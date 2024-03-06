@@ -78,11 +78,14 @@ impl axum::response::IntoResponse for AppError {
             }
             AppError::StructsyError(err) => {
                 tracing::error!("DB error -> {}", err);
-                (StatusCode::BAD_REQUEST, err.to_string())
+                (StatusCode::INTERNAL_SERVER_ERROR, err.to_string())
             }
             AppError::IOError(err) => {
                 tracing::error!("I/O error -> {}", err);
-                (StatusCode::BAD_REQUEST, "bad request".to_owned())
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "something went wrong.  Try agin later!".to_owned(),
+                )
             }
         };
 
@@ -136,6 +139,7 @@ async fn drink_coffee(
     State(state): State<AppState>,
     AppJson(coffee): AppJson<Coffee>,
 ) -> Result<(), AppError> {
+    state.connection.define::<Coffee>()?;
     let mut tx = state.connection.begin()?;
     tx.insert(&coffee)?;
     tx.commit()?;
@@ -180,6 +184,7 @@ async fn drink_beer(
     State(state): State<AppState>,
     AppJson(beer): AppJson<Beer>,
 ) -> Result<(), AppError> {
+    state.connection.define::<Beer>()?;
     let mut tx = state.connection.begin()?;
     tx.insert(&beer)?;
     tx.commit()?;
