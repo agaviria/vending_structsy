@@ -298,56 +298,6 @@ async fn main() {
     let connection = Structsy::open(Structsy::config("./track.db").create(true)).unwrap();
     let state = AppState::new(AppStateT { connection });
 
-    // let coffee_routes = Router::new()
-    //     .route("/create", post(drink_coffee))
-    //     .route("/list", get(list_coffees))
-    //     .route("/update/:id", post(update_coffee))
-    //     .route("/delete/:id", delete(delete_coffee));
-
-    // let beer_routes = Router::new()
-    //     .route("/create", post(drink_beer))
-    //     .route("/list", get(list_beers))
-    //     .route("/update/:id", post(update_beer))
-    //     .route("/delete/:id", delete(delete_beer));
-
-    // let mut app = Router::new()
-    //     .with_state(structsy_db)
-    //     .nest("/coffee", coffee_routes)
-    //     .nest("/beer", beer_routes);
-
-    // let x_request_id = HeaderName::from_static("x-request-id");
-
-    // // Basic access logging
-    // app = app.layer(
-    //     TraceLayer::new_for_http().make_span_with(move |req: &Request<_>| {
-    //         const REQUEST_ID: &str = "request_id";
-
-    //         let method = req.method();
-    //         let uri = req.uri();
-    //         let request_id = req
-    //             .headers()
-    //             .get(&x_request_id)
-    //             .and_then(|id| id.to_str().ok());
-
-    //         let span = error_span!("request", %method, %uri, { REQUEST_ID } = field::Empty);
-
-    //         if let Some(request_id) = request_id {
-    //             span.record(REQUEST_ID, field::display(request_id));
-    //         }
-
-    //         span
-    //     }),
-    // );
-
-    // let x_request_id = HeaderName::from_static("x-request-id");
-
-    // // propagate `x-request-id` headers from request to response
-    // app = app.layer(PropagateRequestIdLayer::new(x_request_id.clone()));
-
-    // app = app.layer(SetRequestIdLayer::new(
-    //     x_request_id.clone(),
-    //     MakeRequestUuid::default(),
-    // ));
     let app = create_router(state).await;
     tracing::info!("Listening on port: 3000");
     app
